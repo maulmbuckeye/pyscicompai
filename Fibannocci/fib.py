@@ -44,7 +44,10 @@ class RecurrenceFibGen (FibGenerator):
 
 
 class BorrowedFibGen(FibGenerator):
-""" Take from https://medium.com/@evlabs/fibonacci-sequence-in-python-in-4-programming-styles-36199f8e416b"""
+
+    """ Taken from https://medium.com/@evlabs/
+fibonacci-sequence-in-python-in-4-programming-styles-36199f8e416b"""
+
     def fib(self, n: int) -> int:
         a, b = 0, 1
         for _ in range(n):
