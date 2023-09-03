@@ -11,7 +11,7 @@ def main():
         th.setup_start(0, -250, 90)
         draw_branch(200, levels)
 
-    input("Hit enter to end")
+    th.wait_to_close_turtle_window()
 
 
 def get_levels():
