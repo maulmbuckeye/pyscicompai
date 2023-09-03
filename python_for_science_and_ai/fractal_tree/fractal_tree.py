@@ -1,15 +1,11 @@
 import random
 from turtle import *
+import common.turtle_helpers as th
 
 
 def main():
-    delay(0)
-    tracer(1000)
-    speed('fastest')
-
-    penup()
-    setpos(0, -250)
-    setheading(90)
+    th.render_quickly()
+    th.setup_start(0, -250, 90)
 
     levels = numinput("Parameters", "Depth of branches off trunk",
                       default=9, minval=0, maxval=15)
