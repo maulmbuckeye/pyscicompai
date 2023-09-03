@@ -15,7 +15,7 @@ def main():
                       default=9, minval=0, maxval=15)
 
     draw_branch(200, levels)
-    update()
+    update()  # Make sure something is shown. Number of drawing actings may be less than tracer value
     input("Hit enter to end")
 
 
