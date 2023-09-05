@@ -1,17 +1,35 @@
 
 from turtle import *
 import common.turtle_helpers as th
+import argparse
 
 
 def main():
 
-    levels = get_levels()
+    depth, size = get_parameters()
 
     with th.render_quickly():
         th.setup_start(0, -250, 90)
-        draw_branch(200, levels)
+        draw_branch(size, depth)
 
     th.wait_to_close_turtle_window()
+
+
+def get_parameters():
+    parser = argparse.ArgumentParser(description='draw a fractal tree')
+    parser.add_argument('-d', '--depth',
+                        nargs=1, type=int)
+
+    parser.add_argument('-s', '--size',
+                        nargs=1, default=200,
+                        help='pixels in first branch, default=250')
+    args = parser.parse_args()
+
+    if args.depth:
+        depth = args.depth[0]
+    else:
+        depth = get_levels()
+    return depth, args.size
 
 
 def get_levels():
