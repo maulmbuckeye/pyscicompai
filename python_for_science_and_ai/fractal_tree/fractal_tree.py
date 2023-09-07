@@ -6,7 +6,8 @@ import argparse
 
 def main():
 
-    depth, size = get_parameters()
+    depth, size, has_jitter = get_parameters()
+    th.Jitter.set(has_jitter)
 
     with th.render_quickly():
         th.setup_start(0, -250, 90)
@@ -17,19 +18,23 @@ def main():
 
 def get_parameters():
     parser = argparse.ArgumentParser(description='draw a fractal tree')
-    parser.add_argument('-d', '--depth',
+    parser.add_argument('-d', '--depth', default=[7],
+                        metavar='DEP',
                         nargs=1, type=int)
 
     parser.add_argument('-s', '--size',
-                        nargs=1, default=200,
-                        help='pixels in first branch, default=250')
+                        nargs=1, default=[200],
+                        type=int,
+                        help='pixels in first branch, default=200')
+    parser.add_argument('--nj', '--nojitter',
+                        help='turn off jitter',
+                        action='store_true')
     args = parser.parse_args()
 
-    if args.depth:
-        depth = args.depth[0]
-    else:
-        depth = get_levels()
-    return depth, args.size
+    depth = args.depth[0] if args.depth else get_levels()
+
+    print(args)
+    return depth, args.size[0], not args.nj
 
 
 def get_levels():
@@ -69,7 +74,7 @@ def draw_branch(length, depth_of_this_branch):
     pensize(length/10)
     pencolor("green" if length < 20 else "brown")
 
-    with draw_this_branch(length + th.jitter(length * 0.25)):
+    with draw_this_branch(length + th.Jitter.jit(length * 0.2)):
         for angle, l in drawing_steps("balanced 4",
                                       length):
             draw_sub_branch(turn_right=angle,
@@ -93,7 +98,7 @@ class draw_this_branch:
 
 
 def draw_sub_branch(turn_right, sub_branch_length, depth_of_parent_branch):
-    this_turn = turn_right + th.jitter(5)
+    this_turn = turn_right + th.Jitter.jit(5)
     rt(this_turn)
     draw_branch(sub_branch_length, depth_of_parent_branch - 1)
     lt(this_turn)

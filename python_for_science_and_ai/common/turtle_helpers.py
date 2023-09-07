@@ -9,7 +9,7 @@ class render_quickly:
         t.tracer(10000)
         t.speed('fastest')
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, _, value, traceback):
         t.update()
 
 
@@ -19,8 +19,20 @@ def setup_start(x, y, heading):
     t.setheading(heading)
 
 
-def jitter(amount):
-    return random.normalvariate(0, amount)
+class Jitter:
+
+    _has_jitter = True
+
+    @classmethod
+    def set(cls, has_jitter):
+        cls._has_jitter = has_jitter
+
+    @classmethod
+    def jit(cls, amount):
+        if cls._has_jitter:
+            return random.normalvariate(0, amount)
+        else:
+            return 0
 
 
 def wait_to_close_turtle_window():
