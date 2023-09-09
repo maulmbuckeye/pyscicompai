@@ -14,20 +14,20 @@ class MyTestCase(unittest.TestCase):
 
     def test_defaults(self):
         depth, size, has_jitter = self._get_parameters_from_cmd_line_string('')
-        self.assertEqual(depth, 7)
-        self.assertEqual(size, 200)
+        self.assertEqual(7, depth)
+        self.assertEqual(200, size)
         self.assertTrue(has_jitter)
 
     def test_depth_9(self):
         depth, size, has_jitter = self._get_parameters_from_cmd_line_string('-d 9')
-        self.assertEqual(depth, 9)
-        self.assertEqual(size, 200)
+        self.assertEqual(9, depth)
+        self.assertEqual(200, size)
         self.assertTrue(has_jitter)
 
     def test_nojitter(self):
         depth, size, has_jitter = self._get_parameters_from_cmd_line_string('--nj')
-        self.assertEqual(depth, 7)
-        self.assertEqual(size, 200)
+        self.assertEqual(7, depth)
+        self.assertEqual(200, size)
         self.assertFalse(has_jitter)
 
     def test_help(self):

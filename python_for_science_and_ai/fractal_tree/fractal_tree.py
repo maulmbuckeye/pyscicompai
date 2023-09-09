@@ -17,10 +17,9 @@ def main():
 
 def get_parameters(argv=None) -> (int, int, bool):
     parser = argparse.ArgumentParser(description='draw a fractal tree')
-    parser.add_argument('-d', '--depth', default=[7],
+    parser.add_argument('-d', '--depth',
                         metavar='DEP',
                         nargs=1, type=int)
-
     parser.add_argument('-s', '--size',
                         nargs=1, default=[200],
                         type=int,
@@ -30,18 +29,7 @@ def get_parameters(argv=None) -> (int, int, bool):
                         action='store_true')
     args = parser.parse_args(argv)
 
-    depth = args.depth[0] if args.depth else get_levels()
-
-    return depth, args.size[0], not args.nj
-
-
-def get_levels():
-    levels = numinput("Parameters", "Depth of branches off trunk",
-                      default=9, minval=0, maxval=15)
-    if levels is None:
-        print("Thanks for playing")
-        exit()
-    return levels
+    return args.depth[0], args.size[0], not args.nj
 
 
 def drawing_steps(option: str, length) -> list:
