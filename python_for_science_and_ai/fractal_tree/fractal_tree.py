@@ -1,4 +1,3 @@
-
 from turtle import *
 import common.turtle_helpers as th
 import argparse
@@ -16,7 +15,7 @@ def main():
     th.wait_to_close_turtle_window()
 
 
-def get_parameters():
+def get_parameters(argv=None) -> (int, int, bool):
     parser = argparse.ArgumentParser(description='draw a fractal tree')
     parser.add_argument('-d', '--depth', default=[7],
                         metavar='DEP',
@@ -29,11 +28,10 @@ def get_parameters():
     parser.add_argument('--nj', '--nojitter',
                         help='turn off jitter',
                         action='store_true')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     depth = args.depth[0] if args.depth else get_levels()
 
-    print(args)
     return depth, args.size[0], not args.nj
 
 
