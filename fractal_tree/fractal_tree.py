@@ -18,7 +18,7 @@ def main():
 def get_parameters(argv=None) -> (int, int, bool):
     parser = argparse.ArgumentParser(description='draw a fractal tree')
     parser.add_argument('-d', '--depth',
-                        metavar='DEP',
+                        metavar='DEP', default=[7],
                         nargs=1, type=int)
     parser.add_argument('-s', '--size',
                         nargs=1, default=[200],
