@@ -1,6 +1,10 @@
-# Couple Oscillators: Mass-Spring Mechanical Systems
+# Coupled Oscillators: Mass-Spring Mechanical Systems
 
 Taken from pages 144-146
+
+## Diagram
+
+![Diagram fro two-mass, three-spring system](image/two-mass_three-spring_system.jpg)
 
 ## Formula
 
