@@ -18,25 +18,32 @@ def Planets(r1, r2, r3, v1, v2, v3, G=1, m1=100, m2=1, m3=1):  # noqa
     return dr1, dr2, dr3, dv1, dv2, dv3
 
 
+def generate_list():
+    n, dt = 800_000, 0.000_01  # noqa
+
+    r1, r2, r3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))  # noqa
+    v1, v2, v3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))
+
+    # The initial conditions.
+    r1[0], r2[0], r3[0] = np.array([0, 0, 0]), np.array([1, 0.1, 0]), np.array([-1, 0, 0])
+    v1[0], v2[0], v3[0] = np.array([0, 0, 0]), np.array([2, 8, -2]), np.array([0, -10, 0])
+
+    # Solve using Euler's numerical method.
+    for i in range(n-1):
+        dr1, dr2, dr3, dv1, dv2, dv3 = Planets(r1[i], r2[i], r3[i], v1[i], v2[i], v3[i])
+        r1[i+1] = r1[i] + dr1 * dt
+        r2[i+1] = r2[i] + dr2 * dt
+        r3[i+1] = r3[i] + dr3 * dt
+        v1[i+1] = v1[i] + dv1 * dt
+        v2[i+1] = v2[i] + dv2 * dt
+        v3[i+1] = v3[i] + dv3 * dt
+
+    return r1, r2, r3, n
+
+
 xmax = 2
 
-n, dt = 800_000, 0.000_01
-r1, r2, r3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))
-v1, v2, v3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))
-
-# The initial conditions.
-r1[0], r2[0], r3[0] = np.array([0, 0, 0]), np.array([1, 0.1, 0]), np.array([-1, 0, 0])
-v1[0], v2[0], v3[0] = np.array([0, 0, 0]), np.array([2, 8, -2]), np.array([0, -10, 0])
-
-# Solve using Euler's numerical method.
-for i in range(n-1):
-    dr1, dr2, dr3, dv1, dv2, dv3 = Planets(r1[i], r2[i], r3[i], v1[i], v2[i], v3[i])
-    r1[i+1] = r1[i] + dr1 * dt
-    r2[i+1] = r2[i] + dr2 * dt
-    r3[i+1] = r3[i] + dr3 * dt
-    v1[i+1] = v1[i] + dv1 * dt
-    v2[i+1] = v2[i] + dv2 * dt
-    v3[i+1] = v3[i] + dv3 * dt
+r1, r2, r3, n = generate_list()
 
 fig = plt.figure()
 ax = Axes3D(fig)
