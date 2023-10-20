@@ -1,43 +1,70 @@
 #  Copied from
 #  https://github.com/proflynch/CRC-Press/blob/main/Anaconda%20Files/Program_14d.py
 #
-
 # Program_14d.py: Three Body Problem.
+from collections import namedtuple
+
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import norm
 
 
-def Planets(r1, r2, r3, v1, v2, v3, G=1, m1=100, m2=1, m3=1):  # noqa
-    r12, r13, r23 = norm(r1-r2), norm(r1-r3), norm(r2-r3)
-    dr1, dr2, dr3 = v1, v2, v3   # noqa
-    dv1 = -G*m2*(r1-r2)/r12**3 - G*m3*(r1-r3)/r13**3  # noqa
-    dv2 = -G*m3*(r2-r3)/r23**3 - G*m1*(r2-r1)/r12**3  # noqa
-    dv3 = -G*m1*(r3-r1)/r13**3 - G*m2*(r3-r2)/r23**3  # noqa
-    return dr1, dr2, dr3, dv1, dv2, dv3
+GRAVITY = 1
+
+Position = namedtuple('Position', ['r', 'v', 'm'])
+Delta = namedtuple('Delta', ['dr', 'dv'])
 
 
-def generate_list():
+def delta_v(source, buddy):
+    norm_cubed = norm(source.r - buddy.r) ** 3
+    res = -GRAVITY * buddy.m * (source.r - buddy.r) / norm_cubed
+    return res
+
+
+def planets(body1, body2, body3):
+
+    dr1, dr2, dr3 = body1.v, body2.v, body3.v
+    dv1 = delta_v(body1, body2) + delta_v(body1, body3)
+    dv2 = delta_v(body2, body1) + delta_v(body2, body3)
+    dv3 = delta_v(body3, body1) + delta_v(body3, body2)
+    return Delta(dr1, dv1), Delta(dr2, dv2), Delta(dr3, dv3)
+
+
+class Body:
+    def __init__(self, n, *, r, velocity, m=1):
+        self.v = np.zeros((n, 3))
+        self.v[0] = velocity
+        self.r = np.zeros((n, 3))
+        self.r[0] = r
+        self.m = m
+
+    def current(self, i):
+        return Position(self.r[i], self.v[i], self.m)
+
+
+def generate_list(speed_up=1):
     n, dt = 800_000, 0.000_01
+    n = int(n/speed_up)
+    dt *= speed_up
 
-    r1, r2, r3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))  # noqa
-    v1, v2, v3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))
-
-    # The initial conditions.
-    r1[0], r2[0], r3[0] = np.array([0, 0, 0]), np.array([1,  0, 1]), np.array([-1,  0, 1])
-    v1[0], v2[0], v3[0] = np.array([0, 0, 0]), np.array([0, 10, 0]), np.array([0, -10, 0])
+    body1 = Body(n, r=[0, 0, 0], velocity=[0,   0,  0], m=100)
+    body2 = Body(n, r=[1, 0.1, 0], velocity=[1,   9, -1])
+    body3 = Body(n, r=[-1, 0, 0], velocity=[0, -10,  0])
 
     # Solve using Euler's numerical method.
     for i in range(n-1):
-        dr1, dr2, dr3, dv1, dv2, dv3 = Planets(r1[i], r2[i], r3[i], v1[i], v2[i], v3[i])
-        r1[i+1] = r1[i] + dr1 * dt
-        r2[i+1] = r2[i] + dr2 * dt
-        r3[i+1] = r3[i] + dr3 * dt
-        v1[i+1] = v1[i] + dv1 * dt
-        v2[i+1] = v2[i] + dv2 * dt
-        v3[i+1] = v3[i] + dv3 * dt
+        delta1, delta2, delta3 = planets(body1.current(i), body2.current(i), body3.current(i))
+        dr1, dv1 = delta1
+        dr2, dv2 = delta2
+        dr3, dv3 = delta3
+        body1.r[i+1] = body1.r[i] + dr1 * dt
+        body2.r[i+1] = body2.r[i] + dr2 * dt
+        body3.r[i+1] = body3.r[i] + dr3 * dt
+        body1.v[i+1] = body1.v[i] + dv1 * dt
+        body2.v[i+1] = body2.v[i] + dv2 * dt
+        body3.v[i+1] = body3.v[i] + dv3 * dt
 
-    return r1, r2, r3
+    return body1.r, body2.r, body3.r
 
 
 def plot_body(this_ax, r, color):
@@ -45,7 +72,7 @@ def plot_body(this_ax, r, color):
     this_ax.plot(r[-1, 0], r[-1, 1], r[-1, 2], "o",  color=color, markersize=10)
 
 
-r1, r2, r3 = generate_list()
+r1, r2, r3 = generate_list(speed_up=100)
 
 xmax = 2
 ax = plt.figure(figsize=(10, 12)).add_subplot(projection='3d')
