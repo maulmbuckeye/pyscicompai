@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from numpy.linalg import norm
 
 import setup_3body as s3b
-from setup_3body import Delta
+from setup_3body import Delta, Body
 
 GRAVITY = 1
 
@@ -26,59 +26,136 @@ def planets(body1, body2, body3):
     return Delta(dr1, dv1), Delta(dr2, dv2), Delta(dr3, dv3)
 
 
-def progress_indicator(i):
-    if i % 2_000 == 0:
+DOT_EQUALS = 2_000
+LINE_EQUALS = 100_000
+
+
+def progress_indicator(i, n):
+
+    if i == 0:
+        print(f'Each dot represents {DOT_EQUALS:,} iterations out of {n:,}.')
+        return
+
+    look_ahead = i+1
+    if look_ahead % DOT_EQUALS == 0:
         print('.', end='')
-        if i % 100_000 == 0:
-            print(end='\n')
+        if look_ahead % LINE_EQUALS == 0:
+            print(f' {look_ahead:>12,}', end='\n')
 
 
-def generate_list(setup_func, speed_up=1):
-    n, dt = 800_000, 0.000_001
-    n = int(n/speed_up)
-    dt *= speed_up
+def generate_list(setup_func, n, dt):
 
+    Body.prepare_for_sim(n, dt)
     body1, body2, body3 = setup_func()
-    for body in (body1, body2, body3):
-        body.prepare_for_sim(n, dt)
 
     # Solve using Euler's numerical method.
     for i in range(n-1):
-        progress_indicator(i)
+        progress_indicator(i, n)
 
         delta1, delta2, delta3 = planets(body1.history_at(i),
                                          body2.history_at(i),
                                          body3.history_at(i))
-
         body1.update(i, delta1)
         body2.update(i, delta2)
         body3.update(i, delta3)
 
-    return body1.r, body2.r, body3.r
+    return TheThreeBodies(body1, body2, body3)
+
+
+def part_of(the_system, start=0, end=None):
+    r1_part = the_system.b1.r[start:end]
+    r2_part = the_system.b2.r[start:end]
+    r3_part = the_system.b3.r[start:end]
+
+    return r1_part, r2_part, r3_part
 
 
 def plot_body(this_ax, r, color):
-    this_ax.plot(r[:, 0],  r[:, 1],  r[:, 2],  "--", color=color, linewidth=0.5)
+    this_ax.plot(r[:, 0],  r[:,  1], r[:, 2],  "--", color=color, linewidth=0.5)
     this_ax.plot(r[-1, 0], r[-1, 1], r[-1, 2], "o",  color=color, markersize=10)
 
 
-r1, r2, r3 = generate_list(s3b.conditions_i, speed_up=100)
+def _add_centered_title(text, above_the_drawing, fontsize, *, linespacing=1.0, va="bottom"):
+    plt.annotate(
+        text=text,
+        xy=(0.5, above_the_drawing),
+        xycoords="axes fraction", ha="center", va=va,
+        fontsize=fontsize, linespacing=linespacing
+    )
 
-xmax = 3
-ax = plt.figure(figsize=(10, 12)).add_subplot(projection='3d')
 
-plt.title('Three Body Interaction', fontsize=20)
-plt.rcParams["font.size"] = "6"
-plt.xlim(-xmax, xmax)
-plt.ylim(-xmax, xmax)
-plot_body(ax, r1, 'orange')
-plot_body(ax, r2, 'red')
-plot_body(ax, r3, 'blue')
+def plot_system(the_system, n, dt, start=0, stop=None):
 
-ax.set_xlabel("x(t)")
-ax.set_ylabel("y(t)")
-ax.set_zlabel("z(t)")
+    r1, r2, r3 = the_system.part_of(start, stop)
 
-ax.view_init(-120, 20)
+    ax = plt.figure(figsize=(10, 12)).add_subplot(projection='3d')
 
-plt.show()
+    _add_centered_title(
+        "Three Body Interaction",
+        above_the_drawing=1.07, fontsize=30
+    )
+    _add_centered_title(
+        f"{n=:,}  {dt=:.8f} ",
+        above_the_drawing=1.03, fontsize=8
+    )
+
+    plt.rcParams["font.size"] = "6"
+
+    max_axis = the_system.max_axis(start, stop)
+    ax.set_xlim(-max_axis, max_axis)
+    ax.set_ylim(-max_axis, max_axis)
+    ax.set_zlim(-max_axis, max_axis)
+
+    plot_body(ax, r1, 'orange')
+    plot_body(ax, r2, 'red')
+    plot_body(ax, r3, 'blue')
+
+    ax.set_xlabel("x(t)")
+    ax.set_ylabel("y(t)")
+    ax.set_zlabel("z(t)")
+
+    ax.view_init(-120, 20)
+
+    plt.show()
+
+
+DEFAULT_ITERATION, DEFAULT_TIME_INTERVAL = 800_000, 0.000_01
+
+
+def main(speed_up=1000):
+
+    n = int(DEFAULT_ITERATION/speed_up)
+    dt = DEFAULT_TIME_INTERVAL * speed_up
+
+    # n = 30_000_000
+
+    the_system = generate_list(s3b.conditions_iii, n, dt)
+
+    plot_system(the_system, n, dt)
+
+    return the_system
+
+
+class TheThreeBodies:
+
+    def __init__(self, b1, b2, b3):
+        self.b1 = b1
+        self.b2 = b2
+        self.b3 = b3
+
+    def max_axis(self, start=0, stop=None):
+        return max(self.b1.r[start, stop].max(),
+                   self.b2.r[start, stop].max(),
+                   self.b3.r[start, stop].max(),
+                   2)
+
+    def part_of(self, start=0, end=None):
+        r1_part = self.b1.r[start:end]
+        r2_part = self.b2.r[start:end]
+        r3_part = self.b3.r[start:end]
+
+        return r1_part, r2_part, r3_part
+
+
+if __name__ == '__main__':
+    main()
