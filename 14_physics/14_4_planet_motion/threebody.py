@@ -7,6 +7,7 @@ from numpy.linalg import norm
 
 import setup_3body as s3b
 from setup_3body import Delta, Body
+import thethreebodies as t3b
 
 GRAVITY = 1
 
@@ -36,11 +37,10 @@ def progress_indicator(i, n):
         print(f'Each dot represents {DOT_EQUALS:,} iterations out of {n:,}.')
         return
 
-    look_ahead = i+1
-    if look_ahead % DOT_EQUALS == 0:
+    if i % DOT_EQUALS == 0:
         print('.', end='')
-        if look_ahead % LINE_EQUALS == 0:
-            print(f' {look_ahead:>12,}', end='\n')
+        if i % LINE_EQUALS == 0:
+            print(f' {i:>12,}', end='\n')
 
 
 def generate_list(setup_func, n, dt):
@@ -59,15 +59,7 @@ def generate_list(setup_func, n, dt):
         body2.update(i, delta2)
         body3.update(i, delta3)
 
-    return TheThreeBodies(body1, body2, body3)
-
-
-def part_of(the_system, start=0, end=None):
-    r1_part = the_system.b1.r[start:end]
-    r2_part = the_system.b2.r[start:end]
-    r3_part = the_system.b3.r[start:end]
-
-    return r1_part, r2_part, r3_part
+    return t3b.TheThreeBodies(body1, body2, body3)
 
 
 def plot_body(this_ax, r, color):
@@ -86,7 +78,7 @@ def _add_centered_title(text, above_the_drawing, fontsize, *, linespacing=1.0, v
 
 def plot_system(the_system, n, dt, start=0, stop=None):
 
-    r1, r2, r3 = the_system.part_of(start, stop)
+    history_of_bodies_positions = the_system.get_plotting_data(start, stop)
 
     ax = plt.figure(figsize=(10, 12)).add_subplot(projection='3d')
 
@@ -95,20 +87,20 @@ def plot_system(the_system, n, dt, start=0, stop=None):
         above_the_drawing=1.07, fontsize=30
     )
     _add_centered_title(
-        f"{n=:,}  {dt=:.8f} ",
+        f"{n=:,}  {dt=:f} ",
         above_the_drawing=1.03, fontsize=8
     )
 
     plt.rcParams["font.size"] = "6"
 
-    max_axis = the_system.max_axis(start, stop)
+    max_axis = max(h.max() for h in history_of_bodies_positions)
     ax.set_xlim(-max_axis, max_axis)
     ax.set_ylim(-max_axis, max_axis)
     ax.set_zlim(-max_axis, max_axis)
 
-    plot_body(ax, r1, 'orange')
-    plot_body(ax, r2, 'red')
-    plot_body(ax, r3, 'blue')
+    for history_of_body, color in zip(history_of_bodies_positions,
+                                      ['orange', 'red', 'blue']):
+        plot_body(ax, history_of_body, color)
 
     ax.set_xlabel("x(t)")
     ax.set_ylabel("y(t)")
@@ -119,43 +111,21 @@ def plot_system(the_system, n, dt, start=0, stop=None):
     plt.show()
 
 
-DEFAULT_ITERATION, DEFAULT_TIME_INTERVAL = 800_000, 0.000_01
+DEFAULT_ITERATION, DEFAULT_TIME_INTERVAL = 1_600_000, 0.000_01
 
 
-def main(speed_up=1000):
+def main(speed_up=10):
 
     n = int(DEFAULT_ITERATION/speed_up)
     dt = DEFAULT_TIME_INTERVAL * speed_up
 
     # n = 30_000_000
 
-    the_system = generate_list(s3b.conditions_iii, n, dt)
+    the_system = generate_list(s3b.moth_1, n, dt)
 
     plot_system(the_system, n, dt)
 
     return the_system
-
-
-class TheThreeBodies:
-
-    def __init__(self, b1, b2, b3):
-        self.b1 = b1
-        self.b2 = b2
-        self.b3 = b3
-
-    def max_axis(self, start=0, stop=None):
-        return max(self.b1.r[start, stop].max(),
-                   self.b2.r[start, stop].max(),
-                   self.b3.r[start, stop].max(),
-                   2)
-
-    def part_of(self, start=0, end=None):
-        r1_part = self.b1.r[start:end]
-        r2_part = self.b2.r[start:end]
-        r3_part = self.b3.r[start:end]
-
-        return r1_part, r2_part, r3_part
-
 
 if __name__ == '__main__':
     main()
