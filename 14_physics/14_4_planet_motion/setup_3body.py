@@ -98,7 +98,8 @@ def hand_in_hand_in_oval():
     DISCOVERED: 2016 by Matthew Sheen
     http://three-body.ipb.ac.rs/sheen_sol.php?id=3
 
-    UNABLE TO GET THIS TO WORK
+    Worked with Semi-implicit Euler
+    n=80,000 dt=0.0001
 
     """
     body1 = Body(r=[ 0.906009977921,  0.347143444587, 0], velocity=[ 0.242474965162,  1.045019736387, 0])
@@ -113,7 +114,8 @@ def moth_1():
     NAME: Moth 1
     DISCOVERED: 2012
 
-    UNABLE TO GET THIS TO WORK
+    Worked with Semi-implicit Euler
+    n=1,600,000 dt=0.000 1
     """
     p1 = 0.464_445
     p2 = 0.396_060
