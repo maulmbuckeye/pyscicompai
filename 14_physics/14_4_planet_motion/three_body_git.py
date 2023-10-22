@@ -6,7 +6,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import norm
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def Planets(r1, r2, r3, v1, v2, v3, G=1, m1=100, m2=1, m3=1):  # noqa
@@ -19,7 +18,7 @@ def Planets(r1, r2, r3, v1, v2, v3, G=1, m1=100, m2=1, m3=1):  # noqa
 
 
 def generate_list():
-    n, dt = 800_000, 0.000_01  # noqa
+    n, dt = 10_000, 0.000_01  # noqa
 
     r1, r2, r3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))  # noqa
     v1, v2, v3 = np.zeros((n, 3)), np.zeros((n, 3)), np.zeros((n, 3))
@@ -41,21 +40,20 @@ def generate_list():
     return r1, r2, r3, n
 
 
-xmax = 2
-
 r1, r2, r3, n = generate_list()
 
-fig = plt.figure()
-ax = Axes3D(fig)
-plt.rcParams["font.size"] = "20"
+xmax = 2
+ax = plt.figure(figsize=(10, 12)).add_subplot(projection='3d')
+plt.rcParams["font.size"] = "6"
 plt.xlim(-xmax, xmax)
 plt.ylim(-xmax, xmax)
+
 ax.plot(r1[:, 0],   r1[:, 1],   r1[:, 2],   "--", color="orange")
-ax.plot(r1[n-1, 0], r1[n-1, 1], r1[n-1, 2], "o",  color="orange", markersize=20)
+ax.plot(r1[n-1, 0], r1[n-1, 1], r1[n-1, 2], "o",  color="orange", markersize=10)
 ax.plot(r2[:, 0],   r2[:, 1],   r2[:, 2],   "--", color="red")
-ax.plot(r2[n-1, 0], r2[n-1, 1], r2[n-1, 2], "ro", markersize=10)
+ax.plot(r2[n-1, 0], r2[n-1, 1], r2[n-1, 2], "o", color="red", markersize=10)
 ax.plot(r3[:, 0],   r3[:, 1],   r3[:, 2],   "--", color="blue")
-ax.plot(r3[n-1, 0], r3[n-1, 1], r3[n-1, 2], "bo", markersize=10)
+ax.plot(r3[n-1, 0], r3[n-1, 1], r3[n-1, 2], "o", color="blue", markersize=10)
 
 ax.set_xlabel("x(t)")
 ax.set_ylabel("y(t)")
