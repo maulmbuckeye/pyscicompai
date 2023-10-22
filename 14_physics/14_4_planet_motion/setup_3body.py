@@ -38,8 +38,10 @@ class Body:
         self.v[i+1] = self.v[i] + delta.dv * self.dt
 
     def update(self, i, delta):
-        """ This is Simi-implicit Euder method.
+        """ This is Semi-implicit Euder method.
         https://en.wikipedia.org/wiki/Semi-implicit_Euler_method
+
+        Alternates include Verlet integration, Leapfrog integration, and Symplectic integrator (see Wikipedia).
          """
 
         self.v[i + 1] = self.v[i] + delta.dv * self.dt
