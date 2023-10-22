@@ -2,3 +2,7 @@
 **/.idea/**
 **/venv/**
 **/.venv/**
+
+*-checkpoint.ipynb
+*.npz
+*.ipynb_checkpoints
