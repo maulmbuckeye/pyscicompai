@@ -1,5 +1,5 @@
 
-This exercise was taken from _Python for Scientifc Computing and Artifical Intelligence.
+This exercise was taken from Stephen Lynch, _Python for Scientific Computing and Artifical Intelligence_, Boca Raton, FL: CRC Press, 2023.
 
 # Formulas
 Acceleration, i.e., the rate of change of the velocity, is
@@ -13,6 +13,8 @@ where
 $$
 G = 6.67430\times 10^{-11} \frac{N \cdot m^2}{kg^2}
 $$
+
+In many simulations as a constant G is set to one(1).
 
 # Sources
 
@@ -67,17 +69,19 @@ three_body_sol=sci.integrate.odeint(ThreeBodyEquations,init_params,time_span,
 
 Animations. Some interesting configurations.
 
-## Rediscovery of figure eight path
-A remarkable periodic solution of the three-body problem in the case of equal masses
-by Alain Chenciner and Richard Montgomery
-Annals of Mathematics, 152 (2000), 881–901
+## (Re?)discovery of figure eight path
+Alain Chenciner and Richard Montgomery. "A remarkable periodic solution of the three-body problem in the case of equal masses"
+_Annals of Mathematics_, 152 (2000), p. 881–901.
+
 https://arxiv.org/pdf/math/0011268.pdf
 
 ## Discovery of new configs
 
 https://arxiv.org/pdf/1303.0181.pdf
 
-##### Press Release 
+This is Jon Cartwright's summary for _Science_:
+
 
 [Physicists Discover a Whopping 13 New Solutions to Three-Body Problem](https://www.science.org/content/article/physicists-discover-whopping-13-new-solutions-three-body-problem)
+
 
