@@ -1,5 +1,18 @@
 
-This exercise wasa taken from _Python for Scientifc Computing and Artifical Intelligenc.
+This exercise was taken from _Python for Scientifc Computing and Artifical Intelligence.
+
+# Formulas
+Acceleration, i.e., the rate of change of the velocity, is
+
+$$
+\frac{d\vec{v_1}}{dt} = -G m_2 \frac{\vec{r_1} - \vec{r_2}}{|\vec{r_1} - \vec{r_2}|^3} -G m_3 \frac{\vec{r_1} - \vec{r_3}}{|\vec{r_1} - \vec{r_3}|^3}
+$$
+
+where
+
+$$
+G = 6.67430\times 10^{-11} \frac{N \cdot m^2}{kg^2}
+$$
 
 # Sources
 
